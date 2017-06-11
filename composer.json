@@ -1,7 +1,8 @@
 {
     "name": "ALU",
     "require": {
-        "php-amqplib/php-amqplib": ">=2.6.3"
+        "php-amqplib/php-amqplib": ">=2.6.3",
+        "phpmailer/phpmailer": ">=5.2"
     },
     "repositories": {
         "packagist": {

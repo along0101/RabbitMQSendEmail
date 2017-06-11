@@ -1,20 +1,27 @@
 <?php
 
 require './vendor/autoload.php';
+
 use PhpAmqpLib\Connection\AMQPStreamConnection;
+use PhpAmqpLib\Message\AMQPMessage;
 
-//$connection = new PhpAmqpLib\Connection\AMQPStreamConnection($host, $port, $user, $password, $vhost, $insist, $login_method, $login_response, $locale, $connection_timeout)
+//参数说明：($host, $port, $user, $password, $vhost, $insist, $login_method, $login_response, $locale, $connection_timeout)
+$connection = new AMQPStreamConnection('localhost', 5672, 'guest', 'guest');
 
-//参数说明：
-$connection = new AMQPStreamConnection('rabbit.host', 5672, 'guest', 'guest');
+//初始化channel
 $channel = $connection->channel();
 
-$channel->queue_declare('hello', false, false, false, false);
+//参数：$queue, $passive, $durable, $exclusive, $auto_delete, $nowait, $arguments, $ticket
+$channel->queue_declare('sendEmail', false, false, false, false);
 
-$msg = new AMQPMessage('Hello World!');
-$channel->basic_publish($msg, '', 'hello');
+$emails = ['yourname@qq.com', 'yourname@163.com', 'yourname@163.com'];
 
-echo " [x] Sent 'Hello World!'\n";
-
-//$channel->close();
-//$connection->close();
+foreach ($emails as $email) {
+    $msg = new AMQPMessage($email . '|' . '内容：这是一个测试邮件。');
+    $channel->basic_publish($msg, '', 'sendEmail');
+    echo " [x] Sent email OK.\n";
+    //sleep(1);
+}
+//关闭
+$channel->close();
+$connection->close();
